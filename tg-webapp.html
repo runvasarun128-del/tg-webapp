@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitch WebApp</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&display=swap");
+    :root {
+      --bg: #0c1016;
+      --card: #111827;
+      --line: #1b2433;
+      --text: #e8eef8;
+      --muted: #9eafc3;
+      --accent: #5eead4;
+      --accent-2: #7c5bff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(120% 120% at 15% 0%, #152033 0%, #0c1016 45%, #080c12 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .shell {
+      width: min(960px, 100%);
+      display: grid;
+      gap: 14px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 18px 50px #00000055;
+    }
+    .auth {
+      text-align: center;
+      padding: 28px;
+      display: grid;
+      gap: 12px;
+    }
+    .title { margin: 0; font-size: 22px; font-weight: 700; }
+    .muted { color: var(--muted); margin: 0; }
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      color: #0c1016;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 30px #00000055;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    .button:active { transform: translateY(1px) scale(0.99); }
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+    .profile {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #192438, #0f1624);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .chip {
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0d1522;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .section {
+      display: grid;
+      gap: 10px;
+    }
+    .section h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .list { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: #0f1724;
+      border: 1px solid var(--line);
+    }
+    .row .meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .pill {
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0d1522;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .pill.positive { background: #10261d; color: #7ff2c4; border-color: #1a6546; }
+    .row-actions { display: flex; gap: 8px; align-items: center; }
+    .ghost {
+      background: #0d1522;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+    .hidden { display: none; }
+    .error {
+      color: #ff8a8a;
+      background: #2a1313;
+      border: 1px solid #4d2020;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card auth" id="authCard">
+      <h1 class="title">Авторизация через Twitch</h1>
+      <p class="muted">Подтверди аккаунт, чтобы увидеть призы и статистику.</p>
+      <div class="error hidden" id="authError"></div>
+      <button class="button" id="connectBtn">Войти через Twitch</button>
+    </div>
+
+    <div class="grid hidden" id="appContent">
+      <div class="card">
+        <div class="profile">
+          <div class="avatar" id="avatar">TW</div>
+          <div>
+            <p class="title" id="displayName">twitch_user</p>
+            <p class="muted" id="username">@not_connected</p>
+          </div>
+          <button class="button ghost" id="refreshPrizes">Обновить</button>
+        </div>
+        <div class="chips">
+          <div class="chip">Выиграно: <span id="totalWon">0</span> ₽</div>
+          <div class="chip">Забрано: <span id="claimedCount">0</span></div>
+          <div class="chip">В ожидании: <span id="pendingCount">0</span></div>
+        </div>
+      </div>
+
+      <div class="card section">
+        <h3>Стримы</h3>
+        <div class="list" id="streamers"></div>
+      </div>
+
+      <div class="card section">
+        <h3>Мои призы</h3>
+        <div class="list" id="prizeList"></div>
+        <div class="muted" id="emptyState" hidden>Пока новых призов нет.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TWITCH_CHANNEL = { name: "obn4l", id: "obn4l", url: "https://www.twitch.tv/obn4l" };
+    const TWITCH_CLIENT_ID = "v8atcd2aov6fr096aa5wzu3yrjrsxu";
+    const TWITCH_TOKEN_KEY = "twitch-access-token";
+
+    const streams = [
+      { name: TWITCH_CHANNEL.name, platform: "Twitch", link: TWITCH_CHANNEL.url, status: "LIVE", viewers: 1240, game: "Giveaway & Chat" },
+    ];
+
+    const prizes = [
+      { id: "p1", title: "Мифический сундук", amount: 150000, status: "NEW" },
+      { id: "p2", title: "Редкий билет", amount: 7500, status: "CLAIMED" },
+      { id: "p3", title: "Эпический дроп", amount: 32000, status: "CLAIMABLE" },
+    ];
+
+    const storageKey = "tg-webapp-claimed";
+    const state = { user: null, claimed: loadClaimed() };
+
+    function loadClaimed() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_) { return {}; }
+    }
+    function saveClaimed() {
+      localStorage.setItem(storageKey, JSON.stringify(state.claimed));
+    }
+    function formatAmount(n) { return n.toLocaleString("ru-RU"); }
+
+    function renderStreams() {
+      const root = document.getElementById("streamers");
+      root.innerHTML = "";
+      streams.forEach((s) => {
+        const row = document.createElement("div");
+        row.className = "row";
+        const left = document.createElement("div");
+        const title = document.createElement("div");
+        title.style.fontWeight = "700";
+        title.textContent = s.name;
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = `${s.platform} • ${s.game} • ${s.viewers} зрителей`;
+        left.append(title, meta);
+        const action = document.createElement("a");
+        action.className = "button ghost";
+        action.href = s.link;
+        action.target = "_blank";
+        action.rel = "noreferrer";
+        action.textContent = "Открыть";
+        row.append(left, action);
+        root.appendChild(row);
+      });
+    }
+
+    function renderPrizes() {
+      const list = document.getElementById("prizeList");
+      const empty = document.getElementById("emptyState");
+      list.innerHTML = "";
+      const merged = prizes.map((p) => (state.claimed[p.id] ? { ...p, status: "CLAIMED" } : p));
+      empty.hidden = merged.length > 0;
+
+      merged.forEach((p) => {
+        const row = document.createElement("div");
+        row.className = "row";
+        const left = document.createElement("div");
+        const title = document.createElement("div");
+        title.style.fontWeight = "700";
+        title.textContent = p.title;
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = `${formatAmount(p.amount)} ₽`;
+        left.append(title, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "row-actions";
+
+        const status = document.createElement("div");
+        status.className = "pill";
+        if (p.status === "NEW" || p.status === "CLAIMABLE") {
+          status.classList.add("positive");
+          status.textContent = "Можно забрать";
+        } else if (p.status === "CLAIMED") {
+          status.textContent = "Забрано";
+        } else {
+          status.textContent = p.status;
+        }
+
+        const btn = document.createElement("button");
+        btn.className = "button ghost";
+        btn.textContent = p.status === "CLAIMED" ? "Забрано" : "Забрать";
+        btn.disabled = p.status === "CLAIMED";
+        btn.style.opacity = btn.disabled ? "0.6" : "1";
+        btn.addEventListener("click", () => {
+          state.claimed[p.id] = true;
+          saveClaimed();
+          renderPrizes();
+          renderStats();
+        });
+
+        actions.append(status, btn);
+        row.append(left, actions);
+        list.appendChild(row);
+      });
+    }
+
+    function renderStats() {
+      const merged = prizes.map((p) => (state.claimed[p.id] ? { ...p, status: "CLAIMED" } : p));
+      const claimed = merged.filter((p) => p.status === "CLAIMED").length;
+      const pending = merged.filter((p) => p.status !== "CLAIMED").length;
+      const total = merged.filter((p) => p.status === "CLAIMED").reduce((sum, p) => sum + p.amount, 0);
+      document.getElementById("totalWon").textContent = formatAmount(total);
+      document.getElementById("claimedCount").textContent = claimed;
+      document.getElementById("pendingCount").textContent = pending;
+    }
+
+    function connectTwitch() {
+      const redirect = `${location.origin}${location.pathname}`;
+      const stateToken = Math.random().toString(36).slice(2);
+      localStorage.setItem("twitch-oauth-state", stateToken);
+      const params = new URLSearchParams({
+        client_id: TWITCH_CLIENT_ID,
+        redirect_uri: redirect,
+        response_type: "token",
+        scope: "user:read:email",
+        state: stateToken,
+      });
+      window.location.href = `https://id.twitch.tv/oauth2/authorize?${params.toString()}`;
+    }
+
+    function getTelegramUser() {
+      try {
+        const tg = window.Telegram?.WebApp;
+        if (!tg || !tg.initDataUnsafe?.user) return null;
+        const u = tg.initDataUnsafe.user;
+        const name = [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || u.username || "user";
+        const username = u.username ? `@${u.username}` : `id:${u.id}`;
+        const avatar = (u.username || name || "TG").slice(0, 2).toUpperCase();
+        return { displayName: name, username, avatar };
+      } catch (_) { return null; }
+    }
+
+    async function fetchTwitchUser(token) {
+      const res = await fetch("https://api.twitch.tv/helix/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Client-Id": TWITCH_CLIENT_ID,
+        },
+      });
+      if (!res.ok) throw new Error(`twitch ${res.status}`);
+      const data = await res.json();
+      const u = data.data?.[0];
+      if (!u) throw new Error("no user");
+      const name = u.display_name || u.login;
+      const username = u.login ? `@${u.login}` : u.id;
+      const avatar = (u.login || name || "TW").slice(0, 2).toUpperCase();
+      return { displayName: name, username, avatar };
+    }
+
+    async function tryRestoreTwitchToken() {
+      const hash = window.location.hash.replace("#", "");
+      const hashParams = new URLSearchParams(hash);
+      const errorBox = document.getElementById("authError");
+      errorBox.classList.add("hidden");
+      errorBox.textContent = "";
+
+      if (hashParams.has("access_token")) {
+        const token = hashParams.get("access_token");
+        const stateFromHash = hashParams.get("state");
+        const storedState = localStorage.getItem("twitch-oauth-state");
+        if (storedState && stateFromHash === storedState) {
+          localStorage.setItem(TWITCH_TOKEN_KEY, token);
+          // clean hash
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+      } else if (hashParams.has("error")) {
+        const err = hashParams.get("error");
+        const desc = hashParams.get("error_description") || "";
+        errorBox.textContent = `Twitch OAuth error: ${err}\n${decodeURIComponent(desc)}`;
+        errorBox.classList.remove("hidden");
+      }
+      const token = localStorage.getItem(TWITCH_TOKEN_KEY);
+      if (!token) return;
+      try {
+        const user = await fetchTwitchUser(token);
+        state.user = user;
+        applyUser();
+      } catch (e) {
+        console.warn("Twitch token invalid", e);
+        localStorage.removeItem(TWITCH_TOKEN_KEY);
+        errorBox.textContent = "Не удалось проверить токен Twitch. Попробуйте войти снова.";
+        errorBox.classList.remove("hidden");
+      }
+    }
+
+    function applyUser() {
+      if (!state.user) return;
+      document.getElementById("displayName").textContent = state.user.displayName;
+      document.getElementById("username").textContent = state.user.username;
+      document.getElementById("avatar").textContent = state.user.avatar;
+      document.getElementById("authCard").classList.add("hidden");
+      document.getElementById("appContent").classList.remove("hidden");
+      renderStats();
+      renderPrizes();
+      renderStreams();
+    }
+
+    function init() {
+      document.getElementById("connectBtn").addEventListener("click", connectTwitch);
+      document.getElementById("refreshPrizes").addEventListener("click", () => {
+        renderPrizes();
+        renderStats();
+      });
+      renderStreams();
+      renderPrizes();
+      renderStats();
+      const tgUser = getTelegramUser();
+      if (tgUser) {
+        state.user = tgUser;
+        applyUser();
+      }
+      tryRestoreTwitchToken();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
