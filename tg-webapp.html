@@ -134,10 +134,10 @@
 <body>
   <div class="shell">
     <div class="card auth" id="authCard">
-      <h1 class="title">??????????? ????? Twitch</h1>
-      <p class="muted">????????? ???????, ????? ??????????? ? ?????????.</p>
+      <h1 class="title">Авторизация через Twitch</h1>
+      <p class="muted">Подтверди аккаунт, чтобы участвовать в розыгрыше.</p>
       <div class="error hidden" id="authError"></div>
-      <button class="button" id="connectBtn">????? ????? Twitch</button>
+      <button class="button" id="connectBtn">Войти через Twitch</button>
     </div>
 
     <div class="grid hidden" id="appContent">
@@ -148,107 +148,106 @@
             <p class="title" id="displayName">twitch_user</p>
             <p class="muted" id="username">@not_connected</p>
           </div>
-          <button class="button ghost" id="refreshBtn">????????</button>
+          <button class="button ghost" id="refreshBtn">Обновить</button>
         </div>
         <div class="chips">
-          <div class="chip">????????: <span id="giveawayStatus">?? ???????</span></div>
-          <div class="chip">?????: <span id="startTimer">--:--</span></div>
-          <div class="chip">??????????: <span id="participantCount">0</span></div>
-          <div class="chip">???????: <span id="conditionStatus">?? ?????????</span></div>
+          <div class="chip">Розыгрыш: <span id="giveawayStatus">не активен</span></div>
+          <div class="chip">Старт: <span id="startTimer">--:--</span></div>
+          <div class="chip">Участников: <span id="participantCount">0</span></div>
+          <div class="chip">Условия: <span id="conditionStatus">не выполнены</span></div>
         </div>
       </div>
 
       <div class="card section">
-        <h3>??????</h3>
+        <h3>Стримы</h3>
         <div class="list" id="streamers"></div>
       </div>
 
       <div class="card section">
-        <h3>??????? ???????</h3>
+        <h3>Условия участия</h3>
         <div class="list">
           <label class="row">
             <div>
-              <div>???????? ?? Twitch obn4l</div>
-              <div class="meta"><a href="https://www.twitch.tv/obn4l" target="_blank" rel="noreferrer">??????? ?????</a></div>
+              <div>Подписка на Twitch obn4l</div>
+              <div class="meta"><a href="https://www.twitch.tv/obn4l" target="_blank" rel="noreferrer">Открыть канал</a></div>
             </div>
             <input class="checkbox" type="checkbox" id="condTwitch">
           </label>
           <label class="row">
             <div>
-              <div>???????? ?? Telegram ?????</div>
-              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">??????? ?????</a></div>
+              <div>Подписка на Telegram канал</div>
+              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">Открыть канал</a></div>
             </div>
             <input class="checkbox" type="checkbox" id="condTelegram">
           </label>
           <div class="row">
             <div>
-              <div>????????? ? ???? (???????: <span id="minMessagesLabel">10</span>)</div>
-              <div class="meta">??????? ?????????? ?????????, ??????? ?? ????????.</div>
+              <div>Сообщений в чате (минимум: <span id="minMessagesLabel">10</span>)</div>
+              <div class="meta">Введите количество сообщений, которые вы написали.</div>
             </div>
             <input class="input" type="number" min="0" id="condMessages" value="0">
           </div>
           <div class="row">
             <div>
-              <div>???????? ????????</div>
-              <div class="meta">????? ??????? ???????? ??? ???????.</div>
+              <div>Выберите редкость</div>
+              <div class="meta">Нужно выбрать редкость для участия.</div>
             </div>
             <select class="select" id="condRarity"></select>
           </div>
         </div>
         <div class="row-actions">
-          <div class="pill" id="conditionPill">??????? ?? ?????????</div>
-          <button class="button ghost" id="checkBtn">????????? ???????</button>
-          <button class="button ghost" id="joinBtn">???????????</button>
+          <div class="pill" id="conditionPill">Условия не выполнены</div>
+          <button class="button ghost" id="checkBtn">Проверить условия</button>
+          <button class="button ghost" id="joinBtn">Участвовать</button>
         </div>
       </div>
 
       <div class="card section hidden" id="adminCard">
-        <h3>??????? obn4l</h3>
+        <h3>Админка obn4l</h3>
         <div class="row">
           <div>
-            <div>?????????? ??????????</div>
-            <div class="meta" id="adminStatus">?? ???????</div>
+            <div>Управление розыгрышем</div>
+            <div class="meta" id="adminStatus">не активен</div>
           </div>
           <div class="row-actions">
-            <button class="button ghost" id="startGiveaway">??????</button>
-            <button class="button ghost" id="stopGiveaway">??????????</button>
+            <button class="button ghost" id="startGiveaway">Начать</button>
+            <button class="button ghost" id="stopGiveaway">Остановить</button>
           </div>
         </div>
         <div class="row">
           <div>
-            <div>??????? ?????????</div>
-            <div class="meta">?????????? ??? ???????</div>
+            <div>Минимум сообщений</div>
+            <div class="meta">Требование для участия</div>
           </div>
           <input class="input" type="number" min="0" id="adminMinMessages">
         </div>
         <div class="row">
           <div>
-            <div>????????? ????????</div>
-            <div class="meta">"?????" ??? ??????????</div>
+            <div>Требуемая редкость</div>
+            <div class="meta">Любая или конкретная</div>
           </div>
           <select class="select" id="adminRarity"></select>
         </div>
         <div class="list" id="participantList"></div>
-        <div class="muted hidden" id="emptyParticipants">???? ?????????? ???.</div>
+        <div class="muted hidden" id="emptyParticipants">Пока участников нет.</div>
       </div>
     </div>
   </div>
 
   <script>
     const TWITCH_CHANNEL = { name: "obn4l", login: "obn4l", url: "https://www.twitch.tv/obn4l" };
-    const TELEGRAM_CHANNEL_URL = "https://t.me/+V_zpVgCzNDA0ZTUy";
     const TWITCH_CLIENT_ID = "jzooqv09s44tt89ds1uv65t0yowa44";
     const TWITCH_TOKEN_KEY = "twitch-access-token";
 
     const rarities = [
-      { key: "any", name: "?????" },
-      { key: "common", name: "???????" },
-      { key: "uncommon", name: "?????????" },
-      { key: "rare", name: "??????" },
-      { key: "very-rare", name: "????? ??????" },
-      { key: "epic", name: "?????????" },
-      { key: "legendary", name: "???????????" },
-      { key: "mythic", name: "??????????" },
+      { key: "any", name: "\u041b\u044e\u0431\u0430\u044f" },
+      { key: "common", name: "\u041e\u0431\u044b\u0447\u043d\u043e\u0435" },
+      { key: "uncommon", name: "\u041d\u0435\u043e\u0431\u044b\u0447\u043d\u043e\u0435" },
+      { key: "rare", name: "\u0420\u0435\u0434\u043a\u043e\u0435" },
+      { key: "very-rare", name: "\u041e\u0447\u0435\u043d\u044c \u0440\u0435\u0434\u043a\u043e\u0435" },
+      { key: "epic", name: "\u042d\u043f\u0438\u0447\u0435\u0441\u043a\u043e\u0435" },
+      { key: "legendary", name: "\u041b\u0435\u0433\u0435\u043d\u0434\u0430\u0440\u043d\u043e\u0435" },
+      { key: "mythic", name: "\u041c\u0438\u0444\u0438\u0447\u0435\u0441\u043a\u043e\u0435" },
     ];
 
     const streams = [
@@ -293,14 +292,14 @@
         title.textContent = s.name;
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = `${s.platform} ? ${s.game} ? ${s.viewers} ????????`;
+        meta.textContent = `${s.platform} ? ${s.game} ? ${s.viewers} зрителей`;
         left.append(title, meta);
         const action = document.createElement("a");
         action.className = "button ghost";
         action.href = s.link;
         action.target = "_blank";
         action.rel = "noreferrer";
-        action.textContent = "???????";
+        action.textContent = "Открыть";
         row.append(left, action);
         root.appendChild(row);
       });
@@ -313,9 +312,9 @@
     }
 
     function renderStats() {
-      document.getElementById("giveawayStatus").textContent = state.giveawayActive ? "???????" : "?? ???????";
+      document.getElementById("giveawayStatus").textContent = state.giveawayActive ? "активен" : "не активен";
       document.getElementById("participantCount").textContent = state.participants.length;
-      document.getElementById("conditionStatus").textContent = conditionsOk() ? "?????????" : "?? ?????????";
+      document.getElementById("conditionStatus").textContent = conditionsOk() ? "выполнены" : "не выполнены";
     }
 
     function renderTimer() {
@@ -326,9 +325,9 @@
       }
       const diff = Math.floor((state.giveawayStart - Date.now()) / 1000);
       if (diff > 0) {
-        timer.textContent = `????? ${formatTime(diff)}`;
+        timer.textContent = `\u0447\u0435\u0440\u0435\u0437 ${formatTime(diff)}`;
       } else {
-        timer.textContent = "????";
+        timer.textContent = "\u0438\u0434\u0435\u0442";
       }
     }
 
@@ -340,7 +339,7 @@
 
       const raritySelect = document.getElementById("condRarity");
       if (!raritySelect.options.length) {
-        rarities.filter(r => r.key != "any").forEach((r) => {
+        rarities.filter(r => r.key !== "any").forEach((r) => {
           const option = document.createElement("option");
           option.value = r.key;
           option.textContent = r.name;
@@ -353,11 +352,11 @@
       if (conditionsOk()) {
         pill.classList.add("positive");
         pill.classList.remove("bad");
-        pill.textContent = "??????? ?????????";
+        pill.textContent = "Условия выполнены";
       } else {
         pill.classList.remove("positive");
         pill.classList.add("bad");
-        pill.textContent = "??????? ?? ?????????";
+        pill.textContent = "Условия не выполнены";
       }
       const joinBtn = document.getElementById("joinBtn");
       joinBtn.disabled = !state.giveawayActive || !conditionsOk();
@@ -376,7 +375,7 @@
         });
       }
       adminSelect.value = state.requiredRarity;
-      document.getElementById("adminStatus").textContent = state.giveawayActive ? "???????" : "?? ???????";
+      document.getElementById("adminStatus").textContent = state.giveawayActive ? "активен" : "не активен";
     }
 
     function renderParticipants() {
@@ -393,7 +392,7 @@
         title.textContent = p.name || p.login || p.id;
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = `${p.login || p.id} ? Twitch: ${p.conditions.twitch ? "??" : "???"} ? TG: ${p.conditions.telegram ? "??" : "???"} ? ?????????: ${p.conditions.messages} ? ????????: ${p.conditions.rarity || "-"}`;
+        meta.textContent = `${p.login || p.id} ? Twitch: ${p.conditions.twitch ? "да" : "нет"} ? TG: ${p.conditions.telegram ? "да" : "нет"} ? Сообщений: ${p.conditions.messages} ? Редкость: ${p.conditions.rarity || "-"}`;
         left.append(title, meta);
         const status = document.createElement("div");
         status.className = "pill";
@@ -419,7 +418,7 @@
         });
         await refreshParticipants();
       } catch (e) {
-        showAuthError("??????? ?? ????????? ??? ???????? ?? ???????.");
+        showAuthError("Условия не выполнены или розыгрыш не активен.");
       }
     }
 
@@ -475,8 +474,7 @@
       } else if (hashParams.has("error")) {
         const err = hashParams.get("error");
         const desc = hashParams.get("error_description") || "";
-        errorBox.textContent = `Twitch OAuth error: ${err}
-${decodeURIComponent(desc)}`;
+        errorBox.textContent = `Twitch OAuth error: ${err}\n${decodeURIComponent(desc)}`;
         errorBox.classList.remove("hidden");
       }
       const token = localStorage.getItem(TWITCH_TOKEN_KEY);
@@ -488,7 +486,7 @@ ${decodeURIComponent(desc)}`;
       } catch (e) {
         console.warn("Twitch token invalid", e);
         localStorage.removeItem(TWITCH_TOKEN_KEY);
-        errorBox.textContent = "?? ??????? ????????? ????? Twitch. ?????????? ????? ?????.";
+        errorBox.textContent = "Не удалось проверить токен Twitch. Попробуйте войти снова.";
         errorBox.classList.remove("hidden");
       }
     }
