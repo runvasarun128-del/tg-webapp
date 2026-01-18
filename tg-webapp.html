@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Twitch WebApp</title>
+  <title>Twitch Giveaway WebApp</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&display=swap");
     :root {
@@ -14,6 +14,7 @@
       --muted: #9eafc3;
       --accent: #5eead4;
       --accent-2: #7c5bff;
+      --danger: #ff7b8b;
     }
     * { box-sizing: border-box; }
     body {
@@ -57,13 +58,16 @@
       color: #0c1016;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       box-shadow: 0 12px 30px #00000055;
-      transition: transform 120ms ease, box-shadow 120ms ease;
+      transition: transform 120ms ease;
     }
     .button:active { transform: translateY(1px) scale(0.99); }
-    .grid {
-      display: grid;
-      gap: 14px;
+    .button.ghost {
+      background: #0d1522;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
     }
+    .grid { display: grid; gap: 14px; }
     .profile {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -79,6 +83,13 @@
       display: grid;
       place-items: center;
       font-weight: 700;
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
     }
     .chips {
       display: flex;
@@ -95,10 +106,7 @@
       font-size: 13px;
       color: var(--text);
     }
-    .section {
-      display: grid;
-      gap: 10px;
-    }
+    .section { display: grid; gap: 10px; }
     .section h3 {
       margin: 0;
       font-size: 15px;
@@ -118,6 +126,7 @@
       background: #0f1724;
       border: 1px solid var(--line);
     }
+    .row label { cursor: pointer; }
     .row .meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
     .pill {
       padding: 6px 10px;
@@ -129,12 +138,12 @@
       color: var(--text);
     }
     .pill.positive { background: #10261d; color: #7ff2c4; border-color: #1a6546; }
+    .pill.bad { background: #2a1216; color: var(--danger); border-color: #4f1f28; }
     .row-actions { display: flex; gap: 8px; align-items: center; }
-    .ghost {
-      background: #0d1522;
-      color: var(--text);
-      border: 1px solid var(--line);
-      box-shadow: none;
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
     }
     .hidden { display: none; }
     .error {
@@ -153,7 +162,7 @@
   <div class="shell">
     <div class="card auth" id="authCard">
       <h1 class="title">Авторизация через Twitch</h1>
-      <p class="muted">Подтверди аккаунт, чтобы увидеть призы и статистику.</p>
+      <p class="muted">Подтверди аккаунт, чтобы участвовать в розыгрыше.</p>
       <div class="error hidden" id="authError"></div>
       <button class="button" id="connectBtn">Войти через Twitch</button>
     </div>
@@ -161,17 +170,17 @@
     <div class="grid hidden" id="appContent">
       <div class="card">
         <div class="profile">
-          <div class="avatar" id="avatar">TW</div>
+          <div class="avatar" id="avatar"><img id="avatarImg" alt="avatar"><span id="avatarText">TW</span></div>
           <div>
             <p class="title" id="displayName">twitch_user</p>
             <p class="muted" id="username">@not_connected</p>
           </div>
-          <button class="button ghost" id="refreshPrizes">Обновить</button>
+          <button class="button ghost" id="refreshBtn">Обновить</button>
         </div>
         <div class="chips">
-          <div class="chip">Выиграно: <span id="totalWon">0</span> ₽</div>
-          <div class="chip">Забрано: <span id="claimedCount">0</span></div>
-          <div class="chip">В ожидании: <span id="pendingCount">0</span></div>
+          <div class="chip">Розыгрыш: <span id="giveawayStatus">не активен</span></div>
+          <div class="chip">Участников: <span id="participantCount">0</span></div>
+          <div class="chip">Условия: <span id="conditionStatus">не выполнены</span></div>
         </div>
       </div>
 
@@ -181,40 +190,97 @@
       </div>
 
       <div class="card section">
-        <h3>Мои призы</h3>
-        <div class="list" id="prizeList"></div>
-        <div class="muted" id="emptyState" hidden>Пока новых призов нет.</div>
+        <h3>Условия участия</h3>
+        <div class="list">
+          <label class="row">
+            <div>
+              <div>Подписка на Twitch obn4l</div>
+              <div class="meta"><a href="https://www.twitch.tv/obn4l" target="_blank" rel="noreferrer">Открыть канал</a></div>
+            </div>
+            <input class="checkbox" type="checkbox" id="condTwitch">
+          </label>
+          <label class="row">
+            <div>
+              <div>Подписка на Telegram канал</div>
+              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">Открыть канал</a></div>
+            </div>
+            <input class="checkbox" type="checkbox" id="condTelegram">
+          </label>
+        </div>
+        <div class="row-actions">
+          <div class="pill" id="conditionPill">Не выполнены</div>
+          <button class="button ghost" id="joinBtn">Участвовать</button>
+        </div>
+      </div>
+
+      <div class="card section hidden" id="adminCard">
+        <h3>Админка obn4l</h3>
+        <div class="row">
+          <div>
+            <div>Управление розыгрышем</div>
+            <div class="meta" id="adminStatus">не активен</div>
+          </div>
+          <div class="row-actions">
+            <button class="button ghost" id="startGiveaway">Начать</button>
+            <button class="button ghost" id="stopGiveaway">Остановить</button>
+          </div>
+        </div>
+        <div class="list" id="participantList"></div>
+        <div class="muted hidden" id="emptyParticipants">Пока участников нет.</div>
       </div>
     </div>
   </div>
 
   <script>
-    const TWITCH_CHANNEL = { name: "obn4l", id: "obn4l", url: "https://www.twitch.tv/obn4l" };
+    const TWITCH_CHANNEL = { name: "obn4l", login: "obn4l", url: "https://www.twitch.tv/obn4l" };
+    const TELEGRAM_CHANNEL_URL = "https://t.me/+V_zpVgCzNDA0ZTUy";
     const TWITCH_CLIENT_ID = "jzooqv09s44tt89ds1uv65t0yowa44";
     const TWITCH_TOKEN_KEY = "twitch-access-token";
+
+    const GIVEAWAY_ACTIVE_KEY = "giveaway-active";
+    const PARTICIPANTS_KEY = "giveaway-participants";
+    const CONDITIONS_PREFIX = "giveaway-conditions:";
 
     const streams = [
       { name: TWITCH_CHANNEL.name, platform: "Twitch", link: TWITCH_CHANNEL.url, status: "LIVE", viewers: 1240, game: "Giveaway & Chat" },
     ];
 
-    const prizes = [
-      { id: "p1", title: "Мифический сундук", amount: 150000, status: "NEW" },
-      { id: "p2", title: "Редкий билет", amount: 7500, status: "CLAIMED" },
-      { id: "p3", title: "Эпический дроп", amount: 32000, status: "CLAIMABLE" },
-    ];
+    const state = {
+      user: null,
+      giveawayActive: loadGiveawayState(),
+      participants: loadParticipants(),
+      conditions: { twitch: false, telegram: false },
+    };
 
-    const storageKey = "tg-webapp-claimed";
-    const state = { user: null, claimed: loadClaimed() };
-
-    function loadClaimed() {
+    function loadGiveawayState() {
+      try { return localStorage.getItem(GIVEAWAY_ACTIVE_KEY) === "1"; } catch (_) { return false; }
+    }
+    function saveGiveawayState() {
+      localStorage.setItem(GIVEAWAY_ACTIVE_KEY, state.giveawayActive ? "1" : "0");
+    }
+    function loadParticipants() {
       try {
-        const raw = localStorage.getItem(storageKey);
-        return raw ? JSON.parse(raw) : {};
-      } catch (_) { return {}; }
+        const raw = localStorage.getItem(PARTICIPANTS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) { return []; }
     }
-    function saveClaimed() {
-      localStorage.setItem(storageKey, JSON.stringify(state.claimed));
+    function saveParticipants() {
+      localStorage.setItem(PARTICIPANTS_KEY, JSON.stringify(state.participants));
     }
+    function userKey() {
+      if (!state.user) return "unknown";
+      return state.user.login || state.user.username || state.user.displayName || "unknown";
+    }
+    function loadConditions() {
+      try {
+        const raw = localStorage.getItem(`${CONDITIONS_PREFIX}${userKey()}`);
+        return raw ? JSON.parse(raw) : { twitch: false, telegram: false };
+      } catch (_) { return { twitch: false, telegram: false }; }
+    }
+    function saveConditions() {
+      localStorage.setItem(`${CONDITIONS_PREFIX}${userKey()}`, JSON.stringify(state.conditions));
+    }
+
     function formatAmount(n) { return n.toLocaleString("ru-RU"); }
 
     function renderStreams() {
@@ -242,65 +308,77 @@
       });
     }
 
-    function renderPrizes() {
-      const list = document.getElementById("prizeList");
-      const empty = document.getElementById("emptyState");
-      list.innerHTML = "";
-      const merged = prizes.map((p) => (state.claimed[p.id] ? { ...p, status: "CLAIMED" } : p));
-      empty.hidden = merged.length > 0;
+    function renderStats() {
+      document.getElementById("giveawayStatus").textContent = state.giveawayActive ? "активен" : "не активен";
+      document.getElementById("participantCount").textContent = state.participants.length;
+      document.getElementById("conditionStatus").textContent = conditionsOk() ? "выполнены" : "не выполнены";
+    }
 
-      merged.forEach((p) => {
+    function conditionsOk() {
+      return state.conditions.twitch && state.conditions.telegram;
+    }
+
+    function renderConditions() {
+      document.getElementById("condTwitch").checked = state.conditions.twitch;
+      document.getElementById("condTelegram").checked = state.conditions.telegram;
+      const pill = document.getElementById("conditionPill");
+      if (conditionsOk()) {
+        pill.classList.add("positive");
+        pill.classList.remove("bad");
+        pill.textContent = "Условия выполнены";
+      } else {
+        pill.classList.remove("positive");
+        pill.classList.add("bad");
+        pill.textContent = "Условия не выполнены";
+      }
+      const joinBtn = document.getElementById("joinBtn");
+      joinBtn.disabled = !state.giveawayActive || !conditionsOk();
+      joinBtn.style.opacity = joinBtn.disabled ? "0.6" : "1";
+    }
+
+    function renderParticipants() {
+      const list = document.getElementById("participantList");
+      const empty = document.getElementById("emptyParticipants");
+      list.innerHTML = "";
+      empty.classList.toggle("hidden", state.participants.length > 0);
+      state.participants.forEach((p) => {
         const row = document.createElement("div");
         row.className = "row";
         const left = document.createElement("div");
         const title = document.createElement("div");
         title.style.fontWeight = "700";
-        title.textContent = p.title;
+        title.textContent = p.name || p.login || p.id;
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = `${formatAmount(p.amount)} ₽`;
+        meta.textContent = `${p.login || p.id} • Twitch: ${p.conditions.twitch ? "да" : "нет"} • TG: ${p.conditions.telegram ? "да" : "нет"}`;
         left.append(title, meta);
-
-        const actions = document.createElement("div");
-        actions.className = "row-actions";
-
         const status = document.createElement("div");
         status.className = "pill";
-        if (p.status === "NEW" || p.status === "CLAIMABLE") {
-          status.classList.add("positive");
-          status.textContent = "Можно забрать";
-        } else if (p.status === "CLAIMED") {
-          status.textContent = "Забрано";
-        } else {
-          status.textContent = p.status;
-        }
-
-        const btn = document.createElement("button");
-        btn.className = "button ghost";
-        btn.textContent = p.status === "CLAIMED" ? "Забрано" : "Забрать";
-        btn.disabled = p.status === "CLAIMED";
-        btn.style.opacity = btn.disabled ? "0.6" : "1";
-        btn.addEventListener("click", () => {
-          state.claimed[p.id] = true;
-          saveClaimed();
-          renderPrizes();
-          renderStats();
-        });
-
-        actions.append(status, btn);
-        row.append(left, actions);
+        status.textContent = p.joinedAt ? new Date(p.joinedAt).toLocaleString("ru-RU") : "";
+        row.append(left, status);
         list.appendChild(row);
       });
     }
 
-    function renderStats() {
-      const merged = prizes.map((p) => (state.claimed[p.id] ? { ...p, status: "CLAIMED" } : p));
-      const claimed = merged.filter((p) => p.status === "CLAIMED").length;
-      const pending = merged.filter((p) => p.status !== "CLAIMED").length;
-      const total = merged.filter((p) => p.status === "CLAIMED").reduce((sum, p) => sum + p.amount, 0);
-      document.getElementById("totalWon").textContent = formatAmount(total);
-      document.getElementById("claimedCount").textContent = claimed;
-      document.getElementById("pendingCount").textContent = pending;
+    function isAdmin() {
+      return state.user && state.user.login && state.user.login.toLowerCase() === "obn4l";
+    }
+
+    function joinGiveaway() {
+      if (!state.user || !state.giveawayActive || !conditionsOk()) return;
+      const id = userKey();
+      const exists = state.participants.some((p) => p.id === id);
+      if (exists) return;
+      state.participants.push({
+        id,
+        name: state.user.displayName,
+        login: state.user.login,
+        conditions: { ...state.conditions },
+        joinedAt: Date.now(),
+      });
+      saveParticipants();
+      renderParticipants();
+      renderStats();
     }
 
     function connectTwitch() {
@@ -315,18 +393,6 @@
         state: stateToken,
       });
       window.location.href = `https://id.twitch.tv/oauth2/authorize?${params.toString()}`;
-    }
-
-    function getTelegramUser() {
-      try {
-        const tg = window.Telegram?.WebApp;
-        if (!tg || !tg.initDataUnsafe?.user) return null;
-        const u = tg.initDataUnsafe.user;
-        const name = [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || u.username || "user";
-        const username = u.username ? `@${u.username}` : `id:${u.id}`;
-        const avatar = (u.username || name || "TG").slice(0, 2).toUpperCase();
-        return { displayName: name, username, avatar };
-      } catch (_) { return null; }
     }
 
     function showAuthError(message) {
@@ -348,8 +414,8 @@
       if (!u) throw new Error("no user");
       const name = u.display_name || u.login;
       const username = u.login ? `@${u.login}` : u.id;
-      const avatar = (u.login || name || "TW").slice(0, 2).toUpperCase();
-      return { displayName: name, username, avatar };
+      const avatarText = (u.login || name || "TW").slice(0, 2).toUpperCase();
+      return { displayName: name, username, avatarText, avatarUrl: u.profile_image_url, login: u.login };
     }
 
     async function tryRestoreTwitchToken() {
@@ -391,23 +457,69 @@
       if (!state.user) return;
       document.getElementById("displayName").textContent = state.user.displayName;
       document.getElementById("username").textContent = state.user.username;
-      document.getElementById("avatar").textContent = state.user.avatar;
+      const avatarImg = document.getElementById("avatarImg");
+      const avatarText = document.getElementById("avatarText");
+      if (state.user.avatarUrl) {
+        avatarImg.src = state.user.avatarUrl;
+        avatarImg.style.display = "block";
+        avatarText.style.display = "none";
+      } else {
+        avatarImg.style.display = "none";
+        avatarText.style.display = "inline";
+        avatarText.textContent = state.user.avatarText || "TW";
+      }
       document.getElementById("authCard").classList.add("hidden");
       document.getElementById("appContent").classList.remove("hidden");
+      state.conditions = loadConditions();
+      renderConditions();
       renderStats();
-      renderPrizes();
       renderStreams();
+      renderParticipants();
+
+      const adminCard = document.getElementById("adminCard");
+      adminCard.classList.toggle("hidden", !isAdmin());
+      document.getElementById("adminStatus").textContent = state.giveawayActive ? "активен" : "не активен";
     }
 
     function init() {
       document.getElementById("connectBtn").addEventListener("click", connectTwitch);
-      document.getElementById("refreshPrizes").addEventListener("click", () => {
-        renderPrizes();
+      document.getElementById("refreshBtn").addEventListener("click", () => {
+        state.participants = loadParticipants();
+        state.giveawayActive = loadGiveawayState();
+        renderStats();
+        renderParticipants();
+      });
+      document.getElementById("condTwitch").addEventListener("change", (e) => {
+        state.conditions.twitch = e.target.checked;
+        saveConditions();
+        renderConditions();
         renderStats();
       });
+      document.getElementById("condTelegram").addEventListener("change", (e) => {
+        state.conditions.telegram = e.target.checked;
+        saveConditions();
+        renderConditions();
+        renderStats();
+      });
+      document.getElementById("joinBtn").addEventListener("click", joinGiveaway);
+      document.getElementById("startGiveaway").addEventListener("click", () => {
+        if (!isAdmin()) return;
+        state.giveawayActive = true;
+        state.participants = [];
+        saveGiveawayState();
+        saveParticipants();
+        renderStats();
+        renderParticipants();
+        document.getElementById("adminStatus").textContent = "активен";
+      });
+      document.getElementById("stopGiveaway").addEventListener("click", () => {
+        if (!isAdmin()) return;
+        state.giveawayActive = false;
+        saveGiveawayState();
+        renderStats();
+        document.getElementById("adminStatus").textContent = "не активен";
+      });
       renderStreams();
-      renderPrizes();
-      renderStats();
       tryRestoreTwitchToken();
     }
 
