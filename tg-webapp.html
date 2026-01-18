@@ -163,7 +163,7 @@
         <div class="list" id="streamers"></div>
       </div>
 
-      <div class="card section">
+      <div class="card section" id="conditionsCard">
         <h3>Условия участия</h3>
         <div class="list">
           <label class="row">
@@ -174,12 +174,16 @@
             <input class="checkbox" type="checkbox" id="condTwitch">
           </label>
           <label class="row">
-            <div>
-              <div>Подписка на Telegram канал</div>
-              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">Открыть канал</a></div>
-            </div>
-            <input class="checkbox" type="checkbox" id="condTelegram">
-          </label>
+  <div>
+    <div>Подписка на Telegram канал</div>
+    <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">Открыть канал</a></div>
+    <div class="meta">Проверка выполняется через бота</div>
+  </div>
+  <div class="row-actions">
+    <button class="button ghost" id="tgCheckBtn">Проверить подписку</button>
+    <span class="pill" id="tgCheckStatus">не проверено</span>
+  </div>
+</label>
           <div class="row">
             <div>
               <div>Сообщений в чате (минимум: <span id="minMessagesLabel">10</span>)</div>
@@ -238,6 +242,7 @@
     const TWITCH_CHANNEL = { name: "obn4l", login: "obn4l", url: "https://www.twitch.tv/obn4l" };
     const TWITCH_CLIENT_ID = "jzooqv09s44tt89ds1uv65t0yowa44";
     const TWITCH_TOKEN_KEY = "twitch-access-token";
+    const TG_BOT_USERNAME = "GTADROPS_BOT";
 
     const rarities = [
       { key: "any", name: "\u041b\u044e\u0431\u0430\u044f" },
@@ -333,7 +338,10 @@
 
     function renderConditions() {
       document.getElementById("condTwitch").checked = state.conditions.twitch;
-      document.getElementById("condTelegram").checked = state.conditions.telegram;
+      const tgStatus = document.getElementById("tgCheckStatus");
+      tgStatus.textContent = state.conditions.telegram ? "подтверждено" : "не проверено";
+      tgStatus.classList.toggle("positive", state.conditions.telegram);
+      tgStatus.classList.toggle("bad", !state.conditions.telegram);
       document.getElementById("condMessages").value = String(state.conditions.messages || 0);
       document.getElementById("minMessagesLabel").textContent = String(state.minMessages);
 
@@ -404,6 +412,21 @@
 
     function isAdmin() {
       return state.user && state.user.login && state.user.login.toLowerCase() === "obn4l";
+    }
+
+    function openTelegramCheck() {
+      if (!TG_BOT_USERNAME || TG_BOT_USERNAME === "your_bot") {
+        alert("Укажи TG_BOT_USERNAME в коде.");
+        return;
+      }
+      const link = `https://t.me/${TG_BOT_USERNAME}?start=check`;
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink(link);
+      } else {
+        window.open(link, "_blank");
+      }
+      state.conditions.telegram = true;
+      renderConditions();
     }
 
     async function joinGiveaway() {
@@ -528,6 +551,7 @@
       renderAdminSettings();
       await refreshParticipants();
       document.getElementById("adminCard").classList.toggle("hidden", !isAdmin());
+      document.getElementById("conditionsCard").classList.toggle("hidden", isAdmin());
     }
 
     async function refreshParticipants() {
@@ -550,10 +574,7 @@
         state.conditions.twitch = e.target.checked;
         renderConditions();
       });
-      document.getElementById("condTelegram").addEventListener("change", (e) => {
-        state.conditions.telegram = e.target.checked;
-        renderConditions();
-      });
+      document.getElementById("tgCheckBtn").addEventListener("click", openTelegramCheck);
       document.getElementById("condMessages").addEventListener("input", (e) => {
         state.conditions.messages = Number(e.target.value) || 0;
         renderConditions();
