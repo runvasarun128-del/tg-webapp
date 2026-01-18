@@ -28,11 +28,7 @@
       justify-content: center;
       padding: 20px;
     }
-    .shell {
-      width: min(960px, 100%);
-      display: grid;
-      gap: 14px;
-    }
+    .shell { width: min(980px, 100%); display: grid; gap: 14px; }
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -40,12 +36,7 @@
       padding: 16px;
       box-shadow: 0 18px 50px #00000055;
     }
-    .auth {
-      text-align: center;
-      padding: 28px;
-      display: grid;
-      gap: 12px;
-    }
+    .auth { text-align: center; padding: 28px; display: grid; gap: 12px; }
     .title { margin: 0; font-size: 22px; font-weight: 700; }
     .muted { color: var(--muted); margin: 0; }
     .button {
@@ -68,12 +59,7 @@
       box-shadow: none;
     }
     .grid { display: grid; gap: 14px; }
-    .profile {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 12px;
-      align-items: center;
-    }
+    .profile { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
     .avatar {
       width: 60px;
       height: 60px;
@@ -85,18 +71,8 @@
       font-weight: 700;
       overflow: hidden;
     }
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-    .chips {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
     .chip {
       padding: 8px 12px;
       border-radius: 12px;
@@ -107,14 +83,7 @@
       color: var(--text);
     }
     .section { display: grid; gap: 10px; }
-    .section h3 {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .section h3 { margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
     .list { display: grid; gap: 10px; }
     .row {
       display: grid;
@@ -126,7 +95,6 @@
       background: #0f1724;
       border: 1px solid var(--line);
     }
-    .row label { cursor: pointer; }
     .row .meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
     .pill {
       padding: 6px 10px;
@@ -140,10 +108,15 @@
     .pill.positive { background: #10261d; color: #7ff2c4; border-color: #1a6546; }
     .pill.bad { background: #2a1216; color: var(--danger); border-color: #4f1f28; }
     .row-actions { display: flex; gap: 8px; align-items: center; }
-    .checkbox {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent);
+    .checkbox { width: 18px; height: 18px; accent-color: var(--accent); }
+    .input, .select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0d1522;
+      color: var(--text);
+      font-size: 13px;
     }
     .hidden { display: none; }
     .error {
@@ -161,10 +134,10 @@
 <body>
   <div class="shell">
     <div class="card auth" id="authCard">
-      <h1 class="title">Авторизация через Twitch</h1>
-      <p class="muted">Подтверди аккаунт, чтобы участвовать в розыгрыше.</p>
+      <h1 class="title">??????????? ????? Twitch</h1>
+      <p class="muted">????????? ???????, ????? ??????????? ? ?????????.</p>
       <div class="error hidden" id="authError"></div>
-      <button class="button" id="connectBtn">Войти через Twitch</button>
+      <button class="button" id="connectBtn">????? ????? Twitch</button>
     </div>
 
     <div class="grid hidden" id="appContent">
@@ -175,58 +148,88 @@
             <p class="title" id="displayName">twitch_user</p>
             <p class="muted" id="username">@not_connected</p>
           </div>
-          <button class="button ghost" id="refreshBtn">Обновить</button>
+          <button class="button ghost" id="refreshBtn">????????</button>
         </div>
         <div class="chips">
-          <div class="chip">Розыгрыш: <span id="giveawayStatus">не активен</span></div>
-          <div class="chip">Участников: <span id="participantCount">0</span></div>
-          <div class="chip">Условия: <span id="conditionStatus">не выполнены</span></div>
+          <div class="chip">????????: <span id="giveawayStatus">?? ???????</span></div>
+          <div class="chip">?????: <span id="startTimer">--:--</span></div>
+          <div class="chip">??????????: <span id="participantCount">0</span></div>
+          <div class="chip">???????: <span id="conditionStatus">?? ?????????</span></div>
         </div>
       </div>
 
       <div class="card section">
-        <h3>Стримы</h3>
+        <h3>??????</h3>
         <div class="list" id="streamers"></div>
       </div>
 
       <div class="card section">
-        <h3>Условия участия</h3>
+        <h3>??????? ???????</h3>
         <div class="list">
           <label class="row">
             <div>
-              <div>Подписка на Twitch obn4l</div>
-              <div class="meta"><a href="https://www.twitch.tv/obn4l" target="_blank" rel="noreferrer">Открыть канал</a></div>
+              <div>???????? ?? Twitch obn4l</div>
+              <div class="meta"><a href="https://www.twitch.tv/obn4l" target="_blank" rel="noreferrer">??????? ?????</a></div>
             </div>
             <input class="checkbox" type="checkbox" id="condTwitch">
           </label>
           <label class="row">
             <div>
-              <div>Подписка на Telegram канал</div>
-              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">Открыть канал</a></div>
+              <div>???????? ?? Telegram ?????</div>
+              <div class="meta"><a href="https://t.me/+V_zpVgCzNDA0ZTUy" target="_blank" rel="noreferrer">??????? ?????</a></div>
             </div>
             <input class="checkbox" type="checkbox" id="condTelegram">
           </label>
+          <div class="row">
+            <div>
+              <div>????????? ? ???? (???????: <span id="minMessagesLabel">10</span>)</div>
+              <div class="meta">??????? ?????????? ?????????, ??????? ?? ????????.</div>
+            </div>
+            <input class="input" type="number" min="0" id="condMessages" value="0">
+          </div>
+          <div class="row">
+            <div>
+              <div>???????? ????????</div>
+              <div class="meta">????? ??????? ???????? ??? ???????.</div>
+            </div>
+            <select class="select" id="condRarity"></select>
+          </div>
         </div>
         <div class="row-actions">
-          <div class="pill" id="conditionPill">Не выполнены</div>
-          <button class="button ghost" id="joinBtn">Участвовать</button>
+          <div class="pill" id="conditionPill">??????? ?? ?????????</div>
+          <button class="button ghost" id="checkBtn">????????? ???????</button>
+          <button class="button ghost" id="joinBtn">???????????</button>
         </div>
       </div>
 
       <div class="card section hidden" id="adminCard">
-        <h3>Админка obn4l</h3>
+        <h3>??????? obn4l</h3>
         <div class="row">
           <div>
-            <div>Управление розыгрышем</div>
-            <div class="meta" id="adminStatus">не активен</div>
+            <div>?????????? ??????????</div>
+            <div class="meta" id="adminStatus">?? ???????</div>
           </div>
           <div class="row-actions">
-            <button class="button ghost" id="startGiveaway">Начать</button>
-            <button class="button ghost" id="stopGiveaway">Остановить</button>
+            <button class="button ghost" id="startGiveaway">??????</button>
+            <button class="button ghost" id="stopGiveaway">??????????</button>
           </div>
         </div>
+        <div class="row">
+          <div>
+            <div>??????? ?????????</div>
+            <div class="meta">?????????? ??? ???????</div>
+          </div>
+          <input class="input" type="number" min="0" id="adminMinMessages">
+        </div>
+        <div class="row">
+          <div>
+            <div>????????? ????????</div>
+            <div class="meta">"?????" ??? ??????????</div>
+          </div>
+          <select class="select" id="adminRarity"></select>
+        </div>
         <div class="list" id="participantList"></div>
-        <div class="muted hidden" id="emptyParticipants">Пока участников нет.</div>
+        <div class="muted hidden" id="emptyParticipants">???? ?????????? ???.</div>
       </div>
     </div>
   </div>
@@ -237,9 +240,16 @@
     const TWITCH_CLIENT_ID = "jzooqv09s44tt89ds1uv65t0yowa44";
     const TWITCH_TOKEN_KEY = "twitch-access-token";
 
-    const GIVEAWAY_ACTIVE_KEY = "giveaway-active";
-    const PARTICIPANTS_KEY = "giveaway-participants";
-    const CONDITIONS_PREFIX = "giveaway-conditions:";
+    const rarities = [
+      { key: "any", name: "?????" },
+      { key: "common", name: "???????" },
+      { key: "uncommon", name: "?????????" },
+      { key: "rare", name: "??????" },
+      { key: "very-rare", name: "????? ??????" },
+      { key: "epic", name: "?????????" },
+      { key: "legendary", name: "???????????" },
+      { key: "mythic", name: "??????????" },
+    ];
 
     const streams = [
       { name: TWITCH_CHANNEL.name, platform: "Twitch", link: TWITCH_CHANNEL.url, status: "LIVE", viewers: 1240, game: "Giveaway & Chat" },
@@ -247,41 +257,29 @@
 
     const state = {
       user: null,
-      giveawayActive: loadGiveawayState(),
-      participants: loadParticipants(),
-      conditions: { twitch: false, telegram: false },
+      giveawayActive: false,
+      giveawayStart: 0,
+      requiredRarity: "any",
+      minMessages: 10,
+      participants: [],
+      conditions: { twitch: false, telegram: false, messages: 0, rarity: "" },
     };
 
-    function loadGiveawayState() {
-      try { return localStorage.getItem(GIVEAWAY_ACTIVE_KEY) === "1"; } catch (_) { return false; }
-    }
-    function saveGiveawayState() {
-      localStorage.setItem(GIVEAWAY_ACTIVE_KEY, state.giveawayActive ? "1" : "0");
-    }
-    function loadParticipants() {
-      try {
-        const raw = localStorage.getItem(PARTICIPANTS_KEY);
-        return raw ? JSON.parse(raw) : [];
-      } catch (_) { return []; }
-    }
-    function saveParticipants() {
-      localStorage.setItem(PARTICIPANTS_KEY, JSON.stringify(state.participants));
-    }
-    function userKey() {
-      if (!state.user) return "unknown";
-      return state.user.login || state.user.username || state.user.displayName || "unknown";
-    }
-    function loadConditions() {
-      try {
-        const raw = localStorage.getItem(`${CONDITIONS_PREFIX}${userKey()}`);
-        return raw ? JSON.parse(raw) : { twitch: false, telegram: false };
-      } catch (_) { return { twitch: false, telegram: false }; }
-    }
-    function saveConditions() {
-      localStorage.setItem(`${CONDITIONS_PREFIX}${userKey()}`, JSON.stringify(state.conditions));
+    function formatTime(sec) {
+      const m = Math.max(0, Math.floor(sec / 60)).toString().padStart(2, "0");
+      const s = Math.max(0, Math.floor(sec % 60)).toString().padStart(2, "0");
+      return `${m}:${s}`;
     }
 
-    function formatAmount(n) { return n.toLocaleString("ru-RU"); }
+    async function api(path, options = {}) {
+      const res = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      const data = await res.json();
+      if (!res.ok) throw data;
+      return data;
+    }
 
     function renderStreams() {
       const root = document.getElementById("streamers");
@@ -295,45 +293,90 @@
         title.textContent = s.name;
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = `${s.platform} • ${s.game} • ${s.viewers} зрителей`;
+        meta.textContent = `${s.platform} ? ${s.game} ? ${s.viewers} ????????`;
         left.append(title, meta);
         const action = document.createElement("a");
         action.className = "button ghost";
         action.href = s.link;
         action.target = "_blank";
         action.rel = "noreferrer";
-        action.textContent = "Открыть";
+        action.textContent = "???????";
         row.append(left, action);
         root.appendChild(row);
       });
     }
 
-    function renderStats() {
-      document.getElementById("giveawayStatus").textContent = state.giveawayActive ? "активен" : "не активен";
-      document.getElementById("participantCount").textContent = state.participants.length;
-      document.getElementById("conditionStatus").textContent = conditionsOk() ? "выполнены" : "не выполнены";
+    function conditionsOk() {
+      const msgOk = state.conditions.messages >= state.minMessages;
+      const rarityOk = state.conditions.rarity && (state.requiredRarity === "any" || state.conditions.rarity === state.requiredRarity);
+      return state.conditions.twitch && state.conditions.telegram && msgOk && rarityOk;
     }
 
-    function conditionsOk() {
-      return state.conditions.twitch && state.conditions.telegram;
+    function renderStats() {
+      document.getElementById("giveawayStatus").textContent = state.giveawayActive ? "???????" : "?? ???????";
+      document.getElementById("participantCount").textContent = state.participants.length;
+      document.getElementById("conditionStatus").textContent = conditionsOk() ? "?????????" : "?? ?????????";
+    }
+
+    function renderTimer() {
+      const timer = document.getElementById("startTimer");
+      if (!state.giveawayActive || !state.giveawayStart) {
+        timer.textContent = "--:--";
+        return;
+      }
+      const diff = Math.floor((state.giveawayStart - Date.now()) / 1000);
+      if (diff > 0) {
+        timer.textContent = `????? ${formatTime(diff)}`;
+      } else {
+        timer.textContent = "????";
+      }
     }
 
     function renderConditions() {
       document.getElementById("condTwitch").checked = state.conditions.twitch;
       document.getElementById("condTelegram").checked = state.conditions.telegram;
+      document.getElementById("condMessages").value = String(state.conditions.messages || 0);
+      document.getElementById("minMessagesLabel").textContent = String(state.minMessages);
+
+      const raritySelect = document.getElementById("condRarity");
+      if (!raritySelect.options.length) {
+        rarities.filter(r => r.key != "any").forEach((r) => {
+          const option = document.createElement("option");
+          option.value = r.key;
+          option.textContent = r.name;
+          raritySelect.appendChild(option);
+        });
+      }
+      raritySelect.value = state.conditions.rarity || "";
+
       const pill = document.getElementById("conditionPill");
       if (conditionsOk()) {
         pill.classList.add("positive");
         pill.classList.remove("bad");
-        pill.textContent = "Условия выполнены";
+        pill.textContent = "??????? ?????????";
       } else {
         pill.classList.remove("positive");
         pill.classList.add("bad");
-        pill.textContent = "Условия не выполнены";
+        pill.textContent = "??????? ?? ?????????";
       }
       const joinBtn = document.getElementById("joinBtn");
       joinBtn.disabled = !state.giveawayActive || !conditionsOk();
       joinBtn.style.opacity = joinBtn.disabled ? "0.6" : "1";
+    }
+
+    function renderAdminSettings() {
+      document.getElementById("adminMinMessages").value = String(state.minMessages);
+      const adminSelect = document.getElementById("adminRarity");
+      if (!adminSelect.options.length) {
+        rarities.forEach((r) => {
+          const option = document.createElement("option");
+          option.value = r.key;
+          option.textContent = r.name;
+          adminSelect.appendChild(option);
+        });
+      }
+      adminSelect.value = state.requiredRarity;
+      document.getElementById("adminStatus").textContent = state.giveawayActive ? "???????" : "?? ???????";
     }
 
     function renderParticipants() {
@@ -350,7 +393,7 @@
         title.textContent = p.name || p.login || p.id;
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = `${p.login || p.id} • Twitch: ${p.conditions.twitch ? "да" : "нет"} • TG: ${p.conditions.telegram ? "да" : "нет"}`;
+        meta.textContent = `${p.login || p.id} ? Twitch: ${p.conditions.twitch ? "??" : "???"} ? TG: ${p.conditions.telegram ? "??" : "???"} ? ?????????: ${p.conditions.messages} ? ????????: ${p.conditions.rarity || "-"}`;
         left.append(title, meta);
         const status = document.createElement("div");
         status.className = "pill";
@@ -364,21 +407,20 @@
       return state.user && state.user.login && state.user.login.toLowerCase() === "obn4l";
     }
 
-    function joinGiveaway() {
+    async function joinGiveaway() {
       if (!state.user || !state.giveawayActive || !conditionsOk()) return;
-      const id = userKey();
-      const exists = state.participants.some((p) => p.id === id);
-      if (exists) return;
-      state.participants.push({
-        id,
-        name: state.user.displayName,
-        login: state.user.login,
-        conditions: { ...state.conditions },
-        joinedAt: Date.now(),
-      });
-      saveParticipants();
-      renderParticipants();
-      renderStats();
+      try {
+        await api("/api/join", {
+          method: "POST",
+          body: JSON.stringify({
+            user: { id: state.user.login, login: state.user.login, name: state.user.displayName },
+            conditions: { ...state.conditions },
+          }),
+        });
+        await refreshParticipants();
+      } catch (e) {
+        showAuthError("??????? ?? ????????? ??? ???????? ?? ???????.");
+      }
     }
 
     function connectTwitch() {
@@ -403,10 +445,7 @@
 
     async function fetchTwitchUser(token) {
       const res = await fetch("https://api.twitch.tv/helix/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Client-Id": TWITCH_CLIENT_ID,
-        },
+        headers: { Authorization: `Bearer ${token}`, "Client-Id": TWITCH_CLIENT_ID },
       });
       if (!res.ok) throw new Error(`twitch ${res.status}`);
       const data = await res.json();
@@ -436,7 +475,8 @@
       } else if (hashParams.has("error")) {
         const err = hashParams.get("error");
         const desc = hashParams.get("error_description") || "";
-        errorBox.textContent = `Twitch OAuth error: ${err}\n${decodeURIComponent(desc)}`;
+        errorBox.textContent = `Twitch OAuth error: ${err}
+${decodeURIComponent(desc)}`;
         errorBox.classList.remove("hidden");
       }
       const token = localStorage.getItem(TWITCH_TOKEN_KEY);
@@ -448,7 +488,7 @@
       } catch (e) {
         console.warn("Twitch token invalid", e);
         localStorage.removeItem(TWITCH_TOKEN_KEY);
-        errorBox.textContent = "Не удалось проверить токен Twitch. Попробуйте войти снова.";
+        errorBox.textContent = "?? ??????? ????????? ????? Twitch. ?????????? ????? ?????.";
         errorBox.classList.remove("hidden");
       }
     }
@@ -470,57 +510,106 @@
       }
       document.getElementById("authCard").classList.add("hidden");
       document.getElementById("appContent").classList.remove("hidden");
-      state.conditions = loadConditions();
+      renderStreams();
+      refreshState();
+    }
+
+    async function refreshState() {
+      try {
+        const data = await api("/api/state");
+        state.giveawayActive = data.active;
+        state.giveawayStart = data.startAt;
+        state.requiredRarity = data.requiredRarity;
+        state.minMessages = data.minMessages;
+      } catch (e) {
+        console.warn("state fetch failed", e);
+      }
       renderConditions();
       renderStats();
-      renderStreams();
-      renderParticipants();
+      renderTimer();
+      renderAdminSettings();
+      await refreshParticipants();
+      document.getElementById("adminCard").classList.toggle("hidden", !isAdmin());
+    }
 
-      const adminCard = document.getElementById("adminCard");
-      adminCard.classList.toggle("hidden", !isAdmin());
-      document.getElementById("adminStatus").textContent = state.giveawayActive ? "активен" : "не активен";
+    async function refreshParticipants() {
+      try {
+        const data = await api("/api/participants");
+        state.participants = data.participants || [];
+      } catch (e) {
+        console.warn("participants fetch failed", e);
+      }
+      renderParticipants();
+      renderStats();
     }
 
     function init() {
       document.getElementById("connectBtn").addEventListener("click", connectTwitch);
       document.getElementById("refreshBtn").addEventListener("click", () => {
-        state.participants = loadParticipants();
-        state.giveawayActive = loadGiveawayState();
-        renderStats();
-        renderParticipants();
+        refreshState();
       });
       document.getElementById("condTwitch").addEventListener("change", (e) => {
         state.conditions.twitch = e.target.checked;
-        saveConditions();
         renderConditions();
-        renderStats();
       });
       document.getElementById("condTelegram").addEventListener("change", (e) => {
         state.conditions.telegram = e.target.checked;
-        saveConditions();
         renderConditions();
-        renderStats();
+      });
+      document.getElementById("condMessages").addEventListener("input", (e) => {
+        state.conditions.messages = Number(e.target.value) || 0;
+        renderConditions();
+      });
+      document.getElementById("condRarity").addEventListener("change", (e) => {
+        state.conditions.rarity = e.target.value;
+        renderConditions();
+      });
+      document.getElementById("checkBtn").addEventListener("click", () => {
+        renderConditions();
       });
       document.getElementById("joinBtn").addEventListener("click", joinGiveaway);
-      document.getElementById("startGiveaway").addEventListener("click", () => {
+      document.getElementById("startGiveaway").addEventListener("click", async () => {
         if (!isAdmin()) return;
-        state.giveawayActive = true;
-        state.participants = [];
-        saveGiveawayState();
-        saveParticipants();
-        renderStats();
-        renderParticipants();
-        document.getElementById("adminStatus").textContent = "активен";
+        await api("/api/admin/start", {
+          method: "POST",
+          body: JSON.stringify({
+            startDelaySec: 30,
+            requiredRarity: state.requiredRarity,
+            minMessages: state.minMessages,
+          }),
+        });
+        refreshState();
       });
-      document.getElementById("stopGiveaway").addEventListener("click", () => {
+      document.getElementById("stopGiveaway").addEventListener("click", async () => {
         if (!isAdmin()) return;
-        state.giveawayActive = false;
-        saveGiveawayState();
-        renderStats();
-        document.getElementById("adminStatus").textContent = "не активен";
+        await api("/api/admin/stop", { method: "POST", body: "{}" });
+        refreshState();
+      });
+      document.getElementById("adminMinMessages").addEventListener("input", async (e) => {
+        state.minMessages = Number(e.target.value) || 0;
+        await api("/api/admin/settings", {
+          method: "POST",
+          body: JSON.stringify({ requiredRarity: state.requiredRarity, minMessages: state.minMessages }),
+        });
+        renderConditions();
+        renderAdminSettings();
+      });
+      document.getElementById("adminRarity").addEventListener("change", async (e) => {
+        state.requiredRarity = e.target.value;
+        await api("/api/admin/settings", {
+          method: "POST",
+          body: JSON.stringify({ requiredRarity: state.requiredRarity, minMessages: state.minMessages }),
+        });
+        renderConditions();
+        renderAdminSettings();
       });
       renderStreams();
+      renderConditions();
+      renderStats();
+      renderTimer();
+      renderAdminSettings();
       tryRestoreTwitchToken();
+      setInterval(renderTimer, 1000);
     }
 
     document.addEventListener("DOMContentLoaded", init);
