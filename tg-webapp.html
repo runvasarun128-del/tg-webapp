@@ -152,10 +152,10 @@
 <body>
   <div class="shell">
     <div class="card auth" id="authCard">
-      <h1 class="title">Авторизация через Twitch</h1>
-      <p class="muted">Подтверди аккаунт, чтобы увидеть призы и статистику.</p>
+      <h1 class="title">Авторизация через Telegram</h1>
+      <p class="muted">Откройте эту страницу внутри Telegram WebApp.</p>
       <div class="error hidden" id="authError"></div>
-      <button class="button" id="connectBtn">Войти через Twitch</button>
+      <button class="button" id="connectBtn">Проверить Telegram</button>
     </div>
 
     <div class="grid hidden" id="appContent">
@@ -190,8 +190,6 @@
 
   <script>
     const TWITCH_CHANNEL = { name: "obn4l", id: "obn4l", url: "https://www.twitch.tv/obn4l" };
-    const TWITCH_CLIENT_ID = "jzooqv09s44tt89ds1uv65t0yowa44";
-    const TWITCH_TOKEN_KEY = "twitch-access-token";
 
     const streams = [
       { name: TWITCH_CHANNEL.name, platform: "Twitch", link: TWITCH_CHANNEL.url, status: "LIVE", viewers: 1240, game: "Giveaway & Chat" },
@@ -303,18 +301,14 @@
       document.getElementById("pendingCount").textContent = pending;
     }
 
-    function connectTwitch() {
-      const redirect = `${location.origin}${location.pathname}`;
-      const stateToken = Math.random().toString(36).slice(2);
-      localStorage.setItem("twitch-oauth-state", stateToken);
-      const params = new URLSearchParams({
-        client_id: TWITCH_CLIENT_ID,
-        redirect_uri: redirect,
-        response_type: "token",
-        scope: "user:read:email",
-        state: stateToken,
-      });
-      window.location.href = `https://id.twitch.tv/oauth2/authorize?${params.toString()}`;
+    function connectTelegram() {
+      const tgUser = getTelegramUser();
+      if (tgUser) {
+        state.user = tgUser;
+        applyUser();
+        return;
+      }
+      showAuthError("Откройте страницу через Telegram WebApp.");
     }
 
     function getTelegramUser() {
@@ -329,57 +323,10 @@
       } catch (_) { return null; }
     }
 
-    async function fetchTwitchUser(token) {
-      const res = await fetch("https://api.twitch.tv/helix/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Client-Id": TWITCH_CLIENT_ID,
-        },
-      });
-      if (!res.ok) throw new Error(`twitch ${res.status}`);
-      const data = await res.json();
-      const u = data.data?.[0];
-      if (!u) throw new Error("no user");
-      const name = u.display_name || u.login;
-      const username = u.login ? `@${u.login}` : u.id;
-      const avatar = (u.login || name || "TW").slice(0, 2).toUpperCase();
-      return { displayName: name, username, avatar };
-    }
-
-    async function tryRestoreTwitchToken() {
-      const hash = window.location.hash.replace("#", "");
-      const hashParams = new URLSearchParams(hash);
+    function showAuthError(message) {
       const errorBox = document.getElementById("authError");
-      errorBox.classList.add("hidden");
-      errorBox.textContent = "";
-
-      if (hashParams.has("access_token")) {
-        const token = hashParams.get("access_token");
-        const stateFromHash = hashParams.get("state");
-        const storedState = localStorage.getItem("twitch-oauth-state");
-        if (storedState && stateFromHash === storedState) {
-          localStorage.setItem(TWITCH_TOKEN_KEY, token);
-          // clean hash
-          history.replaceState(null, "", location.pathname + location.search);
-        }
-      } else if (hashParams.has("error")) {
-        const err = hashParams.get("error");
-        const desc = hashParams.get("error_description") || "";
-        errorBox.textContent = `Twitch OAuth error: ${err}\n${decodeURIComponent(desc)}`;
-        errorBox.classList.remove("hidden");
-      }
-      const token = localStorage.getItem(TWITCH_TOKEN_KEY);
-      if (!token) return;
-      try {
-        const user = await fetchTwitchUser(token);
-        state.user = user;
-        applyUser();
-      } catch (e) {
-        console.warn("Twitch token invalid", e);
-        localStorage.removeItem(TWITCH_TOKEN_KEY);
-        errorBox.textContent = "Не удалось проверить токен Twitch. Попробуйте войти снова.";
-        errorBox.classList.remove("hidden");
-      }
+      errorBox.textContent = message;
+      errorBox.classList.remove("hidden");
     }
 
     function applyUser() {
@@ -395,7 +342,7 @@
     }
 
     function init() {
-      document.getElementById("connectBtn").addEventListener("click", connectTwitch);
+      document.getElementById("connectBtn").addEventListener("click", connectTelegram);
       document.getElementById("refreshPrizes").addEventListener("click", () => {
         renderPrizes();
         renderStats();
@@ -407,8 +354,9 @@
       if (tgUser) {
         state.user = tgUser;
         applyUser();
+      } else {
+        showAuthError("Откройте страницу через Telegram WebApp.");
       }
-      tryRestoreTwitchToken();
     }
 
     document.addEventListener("DOMContentLoaded", init);
